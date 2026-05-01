@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from '../components/StatusBar';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Search, X } from 'lucide-react';
 import { useNav } from '../context/TransitionContext';
 import gsap from 'gsap';
 
@@ -36,14 +36,6 @@ const AMENITY_GROUPS = [
     ],
   },
   {
-    group: 'Eco & Tech',
-    items: [
-      { id: 'solar',      label: 'Solar Panels',       icon: '☀️' },
-      { id: 'ev_charger', label: 'EV Charger',          icon: '⚡' },
-      { id: 'rainwater',  label: 'Rainwater Harvest',  icon: '🌧️' },
-    ],
-  },
-  {
     group: 'Connectivity',
     items: [
       { id: 'metro',       label: 'Metro Station',      icon: '🚇' },
@@ -62,7 +54,15 @@ const AMENITY_GROUPS = [
 export function AmenitiesScreen() {
   const { go, goBack } = useNav();
   const [selected, setSelected] = useState<string[]>(['parking', 'lift', 'power_backup']);
+  const [query, setQuery] = useState('');
   const bodyRef = useRef<HTMLDivElement>(null);
+
+  const q = query.trim().toLowerCase();
+  const filteredGroups = q
+    ? AMENITY_GROUPS
+        .map(g => ({ ...g, items: g.items.filter(i => i.label.toLowerCase().includes(q)) }))
+        .filter(g => g.items.length > 0)
+    : AMENITY_GROUPS;
 
   useEffect(() => {
     if (bodyRef.current) {
@@ -105,6 +105,23 @@ export function AmenitiesScreen() {
             </div>
           </div>
 
+          {/* Search */}
+          <div className="flex items-center gap-2 bg-white border border-black/8 rounded-[12px] px-3.5 py-2.5 shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+            <Search size={16} className="text-[#8f8f8f] shrink-0" />
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Search amenities"
+              className="flex-1 bg-transparent outline-none text-[14px] font-medium text-black placeholder:text-[#8f8f8f]"
+            />
+            {query && (
+              <button onClick={() => setQuery('')} className="shrink-0 p-0.5 rounded-full hover:bg-black/5">
+                <X size={15} className="text-[#8f8f8f]" />
+              </button>
+            )}
+          </div>
+
           {/* Count badge */}
           {selected.length > 0 && (
             <div className="flex items-center gap-2">
@@ -119,7 +136,12 @@ export function AmenitiesScreen() {
 
           {/* Groups */}
           <div ref={bodyRef} className="flex flex-col gap-5">
-            {AMENITY_GROUPS.map(group => (
+            {filteredGroups.length === 0 && (
+              <p className="text-[13px] text-[#8f8f8f] font-medium text-center py-4">
+                No amenities match "{query}"
+              </p>
+            )}
+            {filteredGroups.map(group => (
               <div key={group.group} className="amenity-group flex flex-col gap-2.5">
                 <p className="text-[11px] font-medium text-[#8f8f8f] uppercase tracking-wider">{group.group}</p>
                 <div className="flex flex-wrap gap-2">

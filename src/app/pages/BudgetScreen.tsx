@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from '../components/StatusBar';
-import { ArrowLeft } from 'lucide-react';
 import { useNav } from '../context/TransitionContext';
 import gsap from 'gsap';
 
@@ -79,9 +78,6 @@ export function BudgetScreen() {
         <div className="flex flex-col gap-6 flex-1">
           {/* Header */}
           <div className="flex flex-col gap-2">
-            <button className="p-1 -ml-1 w-fit rounded-full hover:bg-black/5 opacity-30 pointer-events-none">
-              <ArrowLeft size={24} className="text-[#1c1b1f]" />
-            </button>
             <div>
               <h1 className="text-[20px] font-semibold leading-[32px] text-black">What's your budget?</h1>
               <p className="text-[14px] font-medium leading-[20px] text-[#8f8f8f]">Set your monthly rent range</p>
